@@ -27,6 +27,17 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
+/* LOGO */
+.logo-img {
+    width: 80px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
 .nama {
     color: #2f80ed;
     font-weight: 600;
@@ -71,6 +82,10 @@ button {
 <body>
 
 <div class="card">
+
+    <!-- LOGO -->
+    <img src="smansi_logo.png" class="logo-img">
+
     <h2>Verifikasi Data</h2>
 
     <div id="nama" class="nama">Memuat data...</div>
@@ -94,7 +109,6 @@ const nisn = urlParams.get("nisn");
 
 let dataSiswa = null;
 
-// 🔥 normalisasi tanggal (anti beda format)
 function normalize(dateStr){
     let d = new Date(dateStr);
     if(isNaN(d)) return null;
@@ -106,7 +120,6 @@ function normalize(dateStr){
     return `${y}-${m}-${day}`;
 }
 
-// ambil data dari API
 async function loadData(){
     let namaDiv = document.getElementById("nama");
 
@@ -128,7 +141,6 @@ async function loadData(){
     }
 }
 
-// verifikasi
 function verifikasi(e){
     e.preventDefault();
 
@@ -140,7 +152,6 @@ function verifikasi(e){
         return;
     }
 
-    // 🔥 validasi format manual
     if(!/^\d{4}-\d{2}-\d{2}$/.test(input)){
         msg.innerHTML = "Format harus YYYY-MM-DD!";
         return;
@@ -148,9 +159,6 @@ function verifikasi(e){
 
     let inputFix = normalize(input);
     let apiFix = normalize(dataSiswa.tanggal_lahir);
-
-    console.log("INPUT:", inputFix);
-    console.log("API:", apiFix);
 
     msg.innerHTML = "Memverifikasi...";
 
