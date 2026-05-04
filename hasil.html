@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifikasi Data</title>
+<title>Verifikasi Data - SMAN 1 Singorojo</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -22,7 +22,7 @@ body {
     padding: 30px;
     border-radius: 12px;
     text-align: center;
-    width: 320px;
+    width: 330px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
@@ -34,6 +34,13 @@ h2 {
     font-weight: 600;
     color: #2f80ed;
     margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
 }
 
 input, button {
@@ -44,10 +51,15 @@ input, button {
     border: none;
 }
 
+input {
+    background: #f2f2f2;
+}
+
 button {
     background: #2f80ed;
     color: white;
     cursor: pointer;
+    font-weight: 600;
 }
 
 button:hover {
@@ -59,6 +71,11 @@ button:hover {
     color: red;
     font-size: 13px;
 }
+
+.loading {
+    color: #888;
+    font-size: 13px;
+}
 </style>
 </head>
 
@@ -67,8 +84,9 @@ button:hover {
 <div class="card">
 
     <h2>Verifikasi Data</h2>
-    <div id="nama" class="nama">Memuat data...</div>
-    <p>Silakan masukkan tanggal lahir Anda</p>
+
+    <div id="nama" class="nama loading">Memuat data...</div>
+    <div class="desc">Silakan masukkan tanggal lahir Anda</div>
 
     <form onsubmit="verifikasi(event)">
         <input type="date" id="tgl" required>
@@ -76,6 +94,7 @@ button:hover {
     </form>
 
     <div id="msg"></div>
+
 </div>
 
 <script>
@@ -84,9 +103,14 @@ const nisn = urlParams.get("nisn");
 
 let dataSiswa = null;
 
-// ambil data saat halaman dibuka
+// ambil data dari Google Sheets
 async function loadData(){
     let namaDiv = document.getElementById("nama");
+
+    if(!nisn){
+        namaDiv.innerHTML = "NISN tidak ditemukan di URL";
+        return;
+    }
 
     try {
         let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
@@ -94,7 +118,8 @@ async function loadData(){
 
         if(data.status === "ditemukan"){
             dataSiswa = data;
-            namaDiv.innerHTML = "Selamat datang, <br><b>" + data.nama + "</b>";
+            namaDiv.classList.remove("loading");
+            namaDiv.innerHTML = "Selamat datang,<br><b>" + data.nama + "</b>";
         } else {
             namaDiv.innerHTML = "Data tidak ditemukan";
         }
@@ -104,7 +129,8 @@ async function loadData(){
     }
 }
 
-async function verifikasi(e){
+// verifikasi tanggal lahir
+function verifikasi(e){
     e.preventDefault();
 
     let tgl = document.getElementById("tgl").value;
