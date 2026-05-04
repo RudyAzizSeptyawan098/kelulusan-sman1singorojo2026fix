@@ -27,10 +27,6 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-h2 {
-    margin-bottom: 10px;
-}
-
 .nama {
     color: #2f80ed;
     font-weight: 600;
@@ -49,11 +45,12 @@ input, button {
     margin-top: 10px;
     border-radius: 8px;
     border: none;
-    font-size: 14px;
 }
 
 input {
     background: #f2f2f2;
+    text-align: center;
+    letter-spacing: 1px;
 }
 
 button {
@@ -63,18 +60,9 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: #1c60c7;
-}
-
 #msg {
     margin-top: 10px;
     color: red;
-    font-size: 13px;
-}
-
-.loading {
-    color: #888;
     font-size: 13px;
 }
 </style>
@@ -83,10 +71,9 @@ button:hover {
 <body>
 
 <div class="card">
-
     <h2>Verifikasi Data</h2>
 
-    <div id="nama" class="nama loading">Memuat data...</div>
+    <div id="nama" class="nama">Memuat data...</div>
 
     <div class="desc">
         Masukkan tanggal lahir Anda <br>
@@ -99,7 +86,6 @@ button:hover {
     </form>
 
     <div id="msg"></div>
-
 </div>
 
 <script>
@@ -108,14 +94,21 @@ const nisn = urlParams.get("nisn");
 
 let dataSiswa = null;
 
-// 🔹 Ambil data dari API
+// 🔥 normalisasi tanggal (anti beda format)
+function normalize(dateStr){
+    let d = new Date(dateStr);
+    if(isNaN(d)) return null;
+
+    let y = d.getFullYear();
+    let m = String(d.getMonth()+1).padStart(2,'0');
+    let day = String(d.getDate()).padStart(2,'0');
+
+    return `${y}-${m}-${day}`;
+}
+
+// ambil data dari API
 async function loadData(){
     let namaDiv = document.getElementById("nama");
-
-    if(!nisn){
-        namaDiv.innerHTML = "NISN tidak ditemukan!";
-        return;
-    }
 
     try {
         let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
@@ -124,7 +117,6 @@ async function loadData(){
 
         if(data.status === "ditemukan"){
             dataSiswa = data;
-            namaDiv.classList.remove("loading");
             namaDiv.innerHTML = "Selamat datang,<br><b>" + data.nama + "</b>";
         } else {
             namaDiv.innerHTML = "Data tidak ditemukan";
@@ -136,7 +128,7 @@ async function loadData(){
     }
 }
 
-// 🔹 Verifikasi tanggal lahir
+// verifikasi
 function verifikasi(e){
     e.preventDefault();
 
@@ -148,21 +140,21 @@ function verifikasi(e){
         return;
     }
 
-    // validasi format
+    // 🔥 validasi format manual
     if(!/^\d{4}-\d{2}-\d{2}$/.test(input)){
         msg.innerHTML = "Format harus YYYY-MM-DD!";
         return;
     }
 
+    let inputFix = normalize(input);
+    let apiFix = normalize(dataSiswa.tanggal_lahir);
+
+    console.log("INPUT:", inputFix);
+    console.log("API:", apiFix);
+
     msg.innerHTML = "Memverifikasi...";
 
-    // 🔥 samakan nama field dengan API kamu
-    let apiTanggal = (dataSiswa.tanggal_lahir || "").trim();
-
-    console.log("INPUT:", input);
-    console.log("API:", apiTanggal);
-
-    if(apiTanggal === input){
+    if(inputFix === apiFix){
         window.location.href = "final.html?nisn=" + nisn;
     } else {
         msg.innerHTML = "Tanggal lahir tidak sesuai!";
