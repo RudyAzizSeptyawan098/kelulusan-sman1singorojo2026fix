@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hasil Kelulusan</title>
+
+<style>
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+.card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+}
+.lulus {
+    color: green;
+    font-size: 22px;
+    font-weight: bold;
+}
+.tidak {
+    color: red;
+    font-size: 22px;
+    font-weight: bold;
+}
+button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>HASIL KELULUSAN</h2>
+    <div id="hasil">Memuat...</div>
+    <button onclick="download()">Download Surat</button>
+</div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const nisn = urlParams.get("nisn");
+
+async function loadData(){
+    let hasil = document.getElementById("hasil");
+
+    try {
+        let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
+        let data = await res.json();
+
+        if(data.status === "ditemukan"){
+            let statusClass = data.kelulusan === "LULUS" ? "lulus" : "tidak";
+
+            hasil.innerHTML = `
+                <p>${data.nama}</p>
+                <p class="${statusClass}">${data.kelulusan}</p>
+            `;
+        } else {
+            hasil.innerHTML = "Data tidak ditemukan";
+        }
+
+    } catch(err){
+        hasil.innerHTML = "Terjadi error";
+    }
+}
+
+function download(){
+    alert("Fitur download bisa diarahkan ke link PDF dari Google Drive / Sheets");
+    // contoh:
+    // window.location.href = data.link_surat;
+}
+
+loadData();
+</script>
+
+</body>
+</html>
