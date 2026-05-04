@@ -3,27 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cek Kelulusan</title>
+<title>Pengumuman Kelulusan - SMAN 1 Singorojo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     height: 100vh;
-    background: linear-gradient(135deg, #1e5bb8, #2f80ed);
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-serif;
+    color: #333;
 }
+
+/* CARD */
 .card {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 40px 30px;
+    width: 350px;
     text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
 }
-input, button {
+
+/* HEADER */
+.logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.sub {
+    font-size: 13px;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.desc {
+    font-size: 13px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
     margin-top: 10px;
+    font-size: 14px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #56ccf2, #2f80ed);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* ERROR */
+.error {
+    margin-top: 10px;
+    color: #ff6b6b;
+    font-size: 13px;
 }
 </style>
 </head>
@@ -31,18 +110,47 @@ input, button {
 <body>
 
 <div class="card">
+
+    <div class="logo">SMA NEGERI 1 SINGOROJO</div>
+    <div class="sub">Tahun Ajaran 2025/2026</div>
+
     <h2>PENGUMUMAN KELULUSAN</h2>
+    <p class="desc">Silakan masukkan NISN untuk melihat hasil kelulusan</p>
+
     <form onsubmit="lanjut(event)">
         <input type="text" id="nisn" placeholder="Masukkan NISN" required>
-        <button type="submit">Lanjut</button>
+        <button type="submit">Cek Kelulusan</button>
     </form>
+
+    <div id="error" class="error"></div>
+
+    <div class="footer">
+        © 2026 SMAN 1 Singorojo
+    </div>
+
 </div>
 
 <script>
 function lanjut(e){
     e.preventDefault();
-    let nisn = document.getElementById("nisn").value;
-    window.location.href = "hasil.html?nisn=" + nisn;
+
+    let nisn = document.getElementById("nisn").value.trim();
+    let error = document.getElementById("error");
+
+    // validasi sederhana
+    if(nisn.length < 5){
+        error.innerHTML = "NISN tidak valid!";
+        return;
+    }
+
+    error.innerHTML = "";
+
+    // animasi loading kecil
+    document.querySelector("button").innerText = "Memproses...";
+
+    setTimeout(() => {
+        window.location.href = "hasil.html?nisn=" + nisn;
+    }, 500);
 }
 </script>
 
