@@ -20,34 +20,52 @@ body {
 
 .card {
     background: #fff;
-    padding: 35px;
-    border-radius: 14px;
+    padding: 40px;
+    border-radius: 16px;
     text-align: center;
-    width: 340px;
+    width: 380px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.nama {
+.judul {
+    font-size: 22px;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.keterangan {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.nama {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 15px 0;
 }
 
 .status {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
-    margin-top: 10px;
     color: #16a34a;
+    margin: 10px 0;
+}
+
+.tahun {
+    font-size: 14px;
+    margin-top: 10px;
 }
 
 .ucapan {
-    font-size: 13px;
-    margin-top: 12px;
+    font-size: 14px;
+    margin-top: 15px;
     color: #555;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 button {
-    margin-top: 20px;
+    margin-top: 25px;
     padding: 12px;
     width: 100%;
     border: none;
@@ -67,7 +85,7 @@ button:hover {
 <body>
 
 <div class="card">
-    <h2>HASIL KELULUSAN</h2>
+    <div class="judul">HASIL KELULUSAN</div>
     <div id="hasil">Memuat...</div>
     <button id="btnDownload" onclick="download()">Download Surat Pengumuman Kelulusan</button>
 </div>
@@ -91,20 +109,27 @@ async function loadData(){
             let nama = data.nama || "Siswa";
             linkPDF = data.link_pdf;
 
-            // 🔥 PAKSA SEMUA LULUS
             let status = "LULUS";
 
-            let ucapan = `
-                Selamat kepada <b>${nama}</b>.<br><br>
-                Berdasarkan hasil rapat dewan guru SMA Negeri 1 Singorojo,
-                Anda dinyatakan <b>LULUS</b>.<br><br>
-                Semoga keberhasilan ini menjadi langkah awal menuju masa depan yang gemilang.
-            `;
-
             hasil.innerHTML = `
-                <div class="nama">${nama}</div>
+                <div class="keterangan">
+                    Berdasarkan kriteria kelulusan, Rapat Pleno Dewan Guru<br>
+                    SMA Negeri 1 Singorojo, menyatakan bahwa:
+                </div>
+
+                <div class="nama">${nama.toUpperCase()}</div>
+
                 <div class="status">${status}</div>
-                <div class="ucapan">${ucapan}</div>
+
+                <div class="tahun">
+                    dari SMA Negeri 1 Singorojo,<br>
+                    Tahun Ajaran 2025/2026.
+                </div>
+
+                <div class="ucapan">
+                    Selamat kepada <b>${nama}</b>.<br>
+                    Semoga keberhasilan ini menjadi langkah awal menuju masa depan yang gemilang.
+                </div>
             `;
 
         } else {
