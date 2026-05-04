@@ -1,43 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cek Kelulusan</title>
+
+<style>
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #1e5bb8, #2f80ed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+.card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>PENGUMUMAN KELULUSAN</h2>
+    <form onsubmit="lanjut(event)">
+        <input type="text" id="nisn" placeholder="Masukkan NISN" required>
+        <button type="submit">Lanjut</button>
+    </form>
+</div>
+
 <script>
-function cekKelulusan() {
-    const nisn = document.getElementById("nisn").value.trim();
-
-    if (nisn === "") {
-        alert("Masukkan NISN dulu!");
-        return;
-    }
-
-    const url = "https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn;
-
-    fetch(url)
-    .then(res => res.json())
-    .then(data => {
-
-        console.log(data); // DEBUG WAJIB
-
-        if (data.status === "ditemukan") {
-
-            document.body.innerHTML = `
-                <div style="text-align:center; font-family:Arial; padding:50px;">
-                    <h2>HASIL KELULUSAN</h2>
-                    <p><b>Nama:</b> ${data.nama}</p>
-                    <p><b>NISN:</b> ${data.nisn}</p>
-                    <p><b>Tanggal Lahir:</b> ${data.tanggal_lahir}</p>
-                    <p><b>Status:</b> ${data.status_kelulusan || data.keterangan}</p>
-                    <br>
-                    <a href="${data.link_pdf}" target="_blank">
-                        <button>Download Surat</button>
-                    </a>
-                </div>
-            `;
-
-        } else {
-            alert("NISN tidak ditemukan!");
-        }
-    })
-    .catch(err => {
-        alert("Terjadi error!");
-        console.log(err);
-    });
+function lanjut(e){
+    e.preventDefault();
+    let nisn = document.getElementById("nisn").value;
+    window.location.href = "hasil.html?nisn=" + nisn;
 }
 </script>
+
+</body>
+</html>
