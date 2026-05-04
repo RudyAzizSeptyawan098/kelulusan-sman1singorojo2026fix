@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifikasi</title>
+<title>Verifikasi Data</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
@@ -12,22 +14,50 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
+
 .card {
     background: #fff;
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 12px;
     text-align: center;
+    width: 320px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.nama {
+    font-weight: 600;
+    color: #2f80ed;
+    margin-bottom: 15px;
+}
+
 input, button {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    border-radius: 8px;
+    border: none;
 }
+
+button {
+    background: #2f80ed;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1c60c7;
+}
+
 #msg {
     margin-top: 10px;
     color: red;
+    font-size: 13px;
 }
 </style>
 </head>
@@ -35,12 +65,14 @@ input, button {
 <body>
 
 <div class="card">
+
     <h2>Verifikasi Data</h2>
-    <p>Masukkan Tanggal Lahir</p>
+    <div id="nama" class="nama">Memuat data...</div>
+    <p>Silakan masukkan tanggal lahir Anda</p>
 
     <form onsubmit="verifikasi(event)">
         <input type="date" id="tgl" required>
-        <button type="submit">Cek</button>
+        <button type="submit">Verifikasi</button>
     </form>
 
     <div id="msg"></div>
@@ -50,32 +82,49 @@ input, button {
 const urlParams = new URLSearchParams(window.location.search);
 const nisn = urlParams.get("nisn");
 
-async function verifikasi(e){
-    e.preventDefault();
+let dataSiswa = null;
 
-    let tgl = document.getElementById("tgl").value;
-    let msg = document.getElementById("msg");
-
-    msg.innerHTML = "Memverifikasi...";
+// ambil data saat halaman dibuka
+async function loadData(){
+    let namaDiv = document.getElementById("nama");
 
     try {
         let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
         let data = await res.json();
 
         if(data.status === "ditemukan"){
-            if(data.tgl_lahir === tgl){
-                window.location.href = "final.html?nisn=" + nisn;
-            } else {
-                msg.innerHTML = "Tanggal lahir tidak sesuai!";
-            }
+            dataSiswa = data;
+            namaDiv.innerHTML = "Selamat datang, <br><b>" + data.nama + "</b>";
         } else {
-            msg.innerHTML = "Data tidak ditemukan!";
+            namaDiv.innerHTML = "Data tidak ditemukan";
         }
 
     } catch(err){
-        msg.innerHTML = "Terjadi error";
+        namaDiv.innerHTML = "Gagal mengambil data";
     }
 }
+
+async function verifikasi(e){
+    e.preventDefault();
+
+    let tgl = document.getElementById("tgl").value;
+    let msg = document.getElementById("msg");
+
+    if(!dataSiswa){
+        msg.innerHTML = "Data belum siap";
+        return;
+    }
+
+    msg.innerHTML = "Memverifikasi...";
+
+    if(dataSiswa.tgl_lahir === tgl){
+        window.location.href = "final.html?nisn=" + nisn;
+    } else {
+        msg.innerHTML = "Tanggal lahir tidak sesuai!";
+    }
+}
+
+loadData();
 </script>
 
 </body>
