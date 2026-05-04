@@ -54,7 +54,7 @@ body {
 .sub {
     font-size: 13px;
     color: #ddd;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 h2 {
@@ -65,7 +65,14 @@ h2 {
 .desc {
     font-size: 13px;
     color: #ccc;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+/* COUNTDOWN */
+.timer {
+    font-size: 14px;
+    color: #ffcc00;
+    margin-bottom: 15px;
 }
 
 /* INPUT */
@@ -90,12 +97,11 @@ button {
     color: white;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+button:disabled {
+    background: gray;
+    cursor: not-allowed;
 }
 
 /* FOOTER */
@@ -118,19 +124,21 @@ button:hover {
 
 <div class="card">
 
-    <!-- LOGO -->
     <img src="smansi_logo.png" class="logo-img">
 
     <div class="logo">PENGUMUMAN KELULUSAN</div>
 
     <h2>SMA NEGERI 1 SINGOROJO</h2>
     <div class="sub">Tahun Ajaran 2025/2026</div>
-    
+
     <p class="desc">Silakan masukkan NISN untuk melihat hasil kelulusan Anda</p>
 
+    <!-- TIMER -->
+    <div id="timer" class="timer"></div>
+
     <form onsubmit="lanjut(event)">
-        <input type="text" id="nisn" placeholder="Masukkan NISN" required>
-        <button type="submit">Cek Kelulusan</button>
+        <input type="text" id="nisn" placeholder="Masukkan NISN" required disabled>
+        <button type="submit" id="btn" disabled>Cek Kelulusan</button>
     </form>
 
     <div id="error" class="error"></div>
@@ -142,10 +150,42 @@ button:hover {
 </div>
 
 <script>
+// 🔥 WAKTU TARGET (WIB)
+const target = new Date("2026-05-04T18:00:00+07:00");
+
+const timerEl = document.getElementById("timer");
+const btn = document.getElementById("btn");
+const input = document.getElementById("nisn");
+
+function updateTimer(){
+    const now = new Date();
+    const selisih = target - now;
+
+    if(selisih <= 0){
+        timerEl.innerHTML = "Pengumuman sudah dibuka";
+        btn.disabled = false;
+        input.disabled = false;
+        return;
+    }
+
+    const hari = Math.floor(selisih / (1000 * 60 * 60 * 24));
+    const jam = Math.floor((selisih / (1000 * 60 * 60)) % 24);
+    const menit = Math.floor((selisih / (1000 * 60)) % 60);
+    const detik = Math.floor((selisih / 1000) % 60);
+
+    timerEl.innerHTML = 
+        "Pengumuman dibuka dalam:<br>" +
+        `${hari} hari ${jam} jam ${menit} menit ${detik} detik`;
+
+    setTimeout(updateTimer, 1000);
+}
+
+updateTimer();
+
 function lanjut(e){
     e.preventDefault();
 
-    let nisn = document.getElementById("nisn").value.trim();
+    let nisn = input.value.trim();
     let error = document.getElementById("error");
 
     if(nisn.length < 5){
@@ -154,8 +194,7 @@ function lanjut(e){
     }
 
     error.innerHTML = "";
-
-    document.querySelector("button").innerText = "Memproses...";
+    btn.innerText = "Memproses...";
 
     setTimeout(() => {
         window.location.href = "hasil.html?nisn=" + nisn;
