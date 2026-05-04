@@ -108,7 +108,7 @@ const nisn = urlParams.get("nisn");
 
 let dataSiswa = null;
 
-// 🔹 Ambil data dari Google Sheets API
+// 🔹 Ambil data dari API
 async function loadData(){
     let namaDiv = document.getElementById("nama");
 
@@ -148,7 +148,7 @@ function verifikasi(e){
         return;
     }
 
-    // validasi format sederhana
+    // validasi format
     if(!/^\d{4}-\d{2}-\d{2}$/.test(input)){
         msg.innerHTML = "Format harus YYYY-MM-DD!";
         return;
@@ -156,7 +156,13 @@ function verifikasi(e){
 
     msg.innerHTML = "Memverifikasi...";
 
-    if(dataSiswa.tgl_lahir === input){
+    // 🔥 samakan nama field dengan API kamu
+    let apiTanggal = (dataSiswa.tanggal_lahir || "").trim();
+
+    console.log("INPUT:", input);
+    console.log("API:", apiTanggal);
+
+    if(apiTanggal === input){
         window.location.href = "final.html?nisn=" + nisn;
     } else {
         msg.innerHTML = "Tanggal lahir tidak sesuai!";
