@@ -1,17 +1,20 @@
 <script>
 function cekKelulusan() {
-    const nisn = document.getElementById("nisn").value;
+    const nisn = document.getElementById("nisn").value.trim();
 
     if (nisn === "") {
         alert("Masukkan NISN dulu!");
         return;
     }
 
-    const url = "https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec" + nisn;
+    const url = "https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn;
 
     fetch(url)
     .then(res => res.json())
     .then(data => {
+
+        console.log(data); // DEBUG WAJIB
+
         if (data.status === "ditemukan") {
 
             document.body.innerHTML = `
@@ -20,10 +23,10 @@ function cekKelulusan() {
                     <p><b>Nama:</b> ${data.nama}</p>
                     <p><b>NISN:</b> ${data.nisn}</p>
                     <p><b>Tanggal Lahir:</b> ${data.tanggal_lahir}</p>
-                    <p><b>Status:</b> ${data.keterangan}</p>
+                    <p><b>Status:</b> ${data.status_kelulusan || data.keterangan}</p>
                     <br>
                     <a href="${data.link_pdf}" target="_blank">
-                        <button>Lihat / Download Surat</button>
+                        <button>Download Surat</button>
                     </a>
                 </div>
             `;
