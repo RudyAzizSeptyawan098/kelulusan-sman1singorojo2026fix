@@ -36,6 +36,13 @@ body {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
+/* LOGO */
+.logo-img {
+    width: 80px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
 /* HEADER */
 .logo {
     font-size: 18px;
@@ -111,6 +118,9 @@ button:hover {
 
 <div class="card">
 
+    <!-- LOGO -->
+    <img src="smansi_logo.png" class="logo-img">
+
     <div class="logo">PENGUMUMAN KELULUSAN</div>
     <div class="sub">Tahun Ajaran 2025/2026</div>
 
@@ -137,7 +147,6 @@ function lanjut(e){
     let nisn = document.getElementById("nisn").value.trim();
     let error = document.getElementById("error");
 
-    // validasi sederhana
     if(nisn.length < 5){
         error.innerHTML = "NISN tidak valid!";
         return;
@@ -145,7 +154,6 @@ function lanjut(e){
 
     error.innerHTML = "";
 
-    // animasi loading kecil
     document.querySelector("button").innerText = "Memproses...";
 
     setTimeout(() => {
