@@ -21,7 +21,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #333;
 }
 
 /* CARD */
@@ -51,15 +50,15 @@ body {
     margin-bottom: 5px;
 }
 
+h2 {
+    color: #fff;
+    margin-bottom: 5px;
+}
+
 .sub {
     font-size: 13px;
     color: #ddd;
     margin-bottom: 20px;
-}
-
-h2 {
-    color: #fff;
-    margin-bottom: 10px;
 }
 
 .desc {
@@ -68,7 +67,7 @@ h2 {
     margin-bottom: 10px;
 }
 
-/* COUNTDOWN */
+/* TIMER */
 .timer {
     font-size: 14px;
     color: #ffcc00;
@@ -81,9 +80,9 @@ input {
     padding: 12px;
     border-radius: 8px;
     border: none;
-    outline: none;
     margin-top: 10px;
     font-size: 14px;
+    text-align: center;
 }
 
 /* BUTTON */
@@ -104,18 +103,18 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* FOOTER */
-.footer {
-    margin-top: 20px;
-    font-size: 11px;
-    color: #aaa;
-}
-
 /* ERROR */
 .error {
     margin-top: 10px;
     color: #ff6b6b;
     font-size: 13px;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #aaa;
 }
 </style>
 </head>
@@ -133,7 +132,6 @@ button:disabled {
 
     <p class="desc">Silakan masukkan NISN untuk melihat hasil kelulusan Anda</p>
 
-    <!-- TIMER -->
     <div id="timer" class="timer"></div>
 
     <form onsubmit="lanjut(event)">
@@ -150,13 +148,13 @@ button:disabled {
 </div>
 
 <script>
-// 🔥 WAKTU TARGET (WIB)
-const target = new Date("2026-05-04T13:55:00+07:00");
+const target = new Date("2026-05-04T14:00:00+07:00");
 
 const timerEl = document.getElementById("timer");
 const btn = document.getElementById("btn");
 const input = document.getElementById("nisn");
 
+// TIMER
 function updateTimer(){
     const now = new Date();
     const selisih = target - now;
@@ -182,23 +180,45 @@ function updateTimer(){
 
 updateTimer();
 
-function lanjut(e){
+// VALIDASI + CEK DATABASE
+async function lanjut(e){
     e.preventDefault();
 
     let nisn = input.value.trim();
     let error = document.getElementById("error");
 
-    if(nisn.length < 5){
-        error.innerHTML = "NISN tidak valid!";
+    // validasi kosong
+    if(nisn === ""){
+        error.innerHTML = "NISN wajib diisi!";
+        return;
+    }
+
+    // validasi angka
+    if(!/^\d+$/.test(nisn)){
+        error.innerHTML = "NISN harus berupa angka!";
         return;
     }
 
     error.innerHTML = "";
     btn.innerText = "Memproses...";
 
-    setTimeout(() => {
-        window.location.href = "hasil.html?nisn=" + nisn;
-    }, 500);
+    try {
+        let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
+        let text = await res.text();
+        let data = JSON.parse(text);
+
+        if(data.status === "ditemukan"){
+            window.location.href = "hasil.html?nisn=" + nisn;
+        } else {
+            error.innerHTML = "NISN tidak valid!";
+            btn.innerText = "Cek Kelulusan";
+        }
+
+    } catch(err){
+        error.innerHTML = "Terjadi kesalahan koneksi!";
+        btn.innerText = "Cek Kelulusan";
+        console.log(err);
+    }
 }
 </script>
 
