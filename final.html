@@ -3,38 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hasil Kelulusan</title>
+<title>Hasil Kelulusan - SMAN 1 Singorojo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 body {
     height: 100vh;
+    margin: 0;
     background: linear-gradient(135deg, #11998e, #38ef7d);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
+
 .card {
     background: #fff;
-    padding: 30px;
-    border-radius: 10px;
+    padding: 35px;
+    border-radius: 14px;
     text-align: center;
-    width: 300px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
+
+h2 {
+    margin-bottom: 15px;
+}
+
+.nama {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.status {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
 .lulus {
-    color: green;
-    font-size: 22px;
-    font-weight: bold;
+    color: #16a34a;
 }
+
 .tidak {
-    color: red;
-    font-size: 22px;
-    font-weight: bold;
+    color: #dc2626;
 }
+
+.ucapan {
+    font-size: 13px;
+    margin-top: 10px;
+    color: #555;
+}
+
 button {
-    margin-top: 15px;
-    padding: 10px;
+    margin-top: 20px;
+    padding: 12px;
     width: 100%;
+    border: none;
+    border-radius: 8px;
+    background: #11998e;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0e7c72;
 }
 </style>
 </head>
@@ -44,40 +79,56 @@ button {
 <div class="card">
     <h2>HASIL KELULUSAN</h2>
     <div id="hasil">Memuat...</div>
-    <button onclick="download()">Download Surat</button>
+    <button id="btnDownload" onclick="download()">Download Surat Kelulusan</button>
 </div>
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const nisn = urlParams.get("nisn");
 
+let linkPDF = null;
+
 async function loadData(){
     let hasil = document.getElementById("hasil");
 
     try {
         let res = await fetch("https://script.google.com/macros/s/AKfycbz2Ea8ohJhB20hWrTrYW6b7wAMwGIE-RWO75YwMsQLdkanCFQOkPkokbfStDtmeJtfHfw/exec?nisn=" + nisn);
-        let data = await res.json();
+        let text = await res.text();
+        let data = JSON.parse(text);
 
         if(data.status === "ditemukan"){
+
+            linkPDF = data.link_pdf;
+
             let statusClass = data.kelulusan === "LULUS" ? "lulus" : "tidak";
 
+            let ucapan = data.kelulusan === "LULUS"
+                ? "Selamat! Anda dinyatakan LULUS. Semoga sukses dalam melanjutkan pendidikan ke jenjang berikutnya."
+                : "Mohon maaf, Anda dinyatakan BELUM LULUS. Tetap semangat dan jangan menyerah.";
+
             hasil.innerHTML = `
-                <p>${data.nama}</p>
-                <p class="${statusClass}">${data.kelulusan}</p>
+                <div class="nama">${data.nama}</div>
+                <div class="status ${statusClass}">${data.kelulusan}</div>
+                <div class="ucapan">${ucapan}</div>
             `;
+
         } else {
             hasil.innerHTML = "Data tidak ditemukan";
+            document.getElementById("btnDownload").style.display = "none";
         }
 
     } catch(err){
         hasil.innerHTML = "Terjadi error";
+        console.log(err);
     }
 }
 
 function download(){
-    alert("Fitur download bisa diarahkan ke link PDF dari Google Drive / Sheets");
-    // contoh:
-    // window.location.href = data.link_surat;
+    if(linkPDF){
+        window.open(linkPDF, "_blank");
+    } else {
+        alert("Link surat tidak tersedia");
+    }
 }
 
 loadData();
