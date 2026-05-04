@@ -80,13 +80,6 @@ let linkPDF = null;
 function getStatus(raw){
     let s = (raw || "").toString().trim().toUpperCase();
 
-    // kalau kosong → anggap tidak lulus
-    if(!s) return "TIDAK LULUS";
-
-    if(s.includes("TIDAK") || s.includes("BELUM")){
-        return "TIDAK LULUS";
-    }
-
     if(s.includes("LULUS")){
         return "LULUS";
     }
