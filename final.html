@@ -30,7 +30,6 @@ body {
 .nama {
     font-weight: 700;
     margin-bottom: 10px;
-    font-size: 16px;
 }
 
 .status {
@@ -39,13 +38,8 @@ body {
     margin-top: 10px;
 }
 
-.lulus {
-    color: #16a34a;
-}
-
-.tidak {
-    color: #dc2626;
-}
+.lulus { color: #16a34a; }
+.tidak { color: #dc2626; }
 
 .ucapan {
     font-size: 13px;
@@ -65,10 +59,6 @@ button {
     font-weight: 600;
     cursor: pointer;
 }
-
-button:hover {
-    background: #0e7c72;
-}
 </style>
 </head>
 
@@ -86,6 +76,24 @@ const nisn = urlParams.get("nisn");
 
 let linkPDF = null;
 
+// 🔥 fungsi penentu status (ANTI SALAH TOTAL)
+function getStatus(raw){
+    let s = (raw || "").toString().trim().toUpperCase();
+
+    // kalau kosong → anggap tidak lulus
+    if(!s) return "TIDAK LULUS";
+
+    if(s.includes("TIDAK") || s.includes("BELUM")){
+        return "TIDAK LULUS";
+    }
+
+    if(s.includes("LULUS")){
+        return "LULUS";
+    }
+
+    return "TIDAK LULUS";
+}
+
 async function loadData(){
     let hasil = document.getElementById("hasil");
 
@@ -99,13 +107,15 @@ async function loadData(){
             linkPDF = data.link_pdf;
 
             let nama = data.nama || "Siswa";
-            let status = (data.kelulusan || "").toString().trim().toUpperCase();
+
+            // 🔥 gunakan fungsi aman
+            let status = getStatus(data.kelulusan);
 
             let statusClass = status === "LULUS" ? "lulus" : "tidak";
 
             let ucapan = status === "LULUS"
-                ? `Selamat kepada <b>${nama}</b>. Berdasarkan hasil rapat dewan guru SMA Negeri 1 Singorojo, Anda dinyatakan <b>LULUS</b>. Semoga keberhasilan ini menjadi langkah awal menuju masa depan yang gemilang.`
-                : `Kepada <b>${nama}</b>, berdasarkan hasil rapat dewan guru SMA Negeri 1 Singorojo, Anda dinyatakan <b>BELUM LULUS</b>. Tetap semangat, terus berusaha, dan jangan menyerah dalam meraih cita-cita.`;
+                ? `Selamat kepada <b>${nama}</b>. Berdasarkan hasil rapat dewan guru SMA Negeri 1 Singorojo, Anda dinyatakan <b>LULUS</b>. Semoga sukses ke jenjang berikutnya.`
+                : `Kepada <b>${nama}</b>, berdasarkan hasil rapat dewan guru SMA Negeri 1 Singorojo, Anda dinyatakan <b>TIDAK LULUS</b>. Tetap semangat dan terus berusaha.`;
 
             hasil.innerHTML = `
                 <div class="nama">${nama}</div>
